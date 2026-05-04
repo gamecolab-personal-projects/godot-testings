@@ -1,0 +1,162 @@
+[gd_scene format=3 uid="uid://be66ifum8gyw2"]
+
+[ext_resource type="PackedScene" uid="uid://pif48w4pfkax" path="res://models/X Bot.fbx" id="1_refnd"]
+[ext_resource type="Script" uid="uid://b4xk15tykp1qo" path="res://scenes/x_bot.gd" id="2_elurl"]
+
+[node name="X Bot" unique_id=218327802 instance=ExtResource("1_refnd")]
+script = ExtResource("2_elurl")
+velocidad = 5.0
+multiplicador_zancada = 3.0
+agachado = 0.1
+
+[node name="Skeleton3D" parent="." index="0" unique_id=1864599543]
+bones/11/rotation = Quaternion(0.25328454, 0.061618283, -0.2282103, 0.93806726)
+bones/13/rotation = Quaternion(-0.0016647386, -0.00080778124, 0.0069197505, 0.9999744)
+bones/15/rotation = Quaternion(-6.059341e-07, 9.9535276e-11, -0.00016426753, 1)
+bones/16/rotation = Quaternion(-6.084827e-20, 0, 0.00025564426, 1)
+bones/17/rotation = Quaternion(-1.010017e-20, 0, -8.792197e-05, 1)
+bones/19/rotation = Quaternion(-9.78174e-07, 4.9085347e-10, -0.0005018059, 0.9999999)
+bones/20/rotation = Quaternion(-1.7667906e-20, -2.646978e-23, 0.00084987143, 0.99999964)
+bones/21/rotation = Quaternion(-2.5239809e-19, 5.293956e-23, -0.000321842, 0.99999994)
+bones/23/rotation = Quaternion(6.963166e-08, 1.085061e-11, 0.0001558293, 1)
+bones/24/rotation = Quaternion(-3.761026e-20, 0, -0.0002215151, 1)
+bones/25/rotation = Quaternion(2.317801e-20, 6.617445e-24, -0.0001128051, 1)
+bones/27/rotation = Quaternion(4.6707196e-06, 2.430471e-09, 0.000520363, 0.9999999)
+bones/28/rotation = Quaternion(4.8573726e-21, -6.617445e-24, 0.00084623165, 0.99999964)
+bones/29/rotation = Quaternion(-1.2429584e-21, 8.271806e-25, -0.0004967778, 0.9999999)
+bones/37/rotation = Quaternion(-0.0015313593, 0.0007452554, -0.006073121, 0.99998015)
+bones/45/rotation = Quaternion(-4.2758992e-07, -8.846624e-12, 2.0689502e-05, 1)
+bones/55/rotation = Quaternion(2.704767e-09, 0.0103564765, 0.9999464, 2.6115273e-07)
+bones/60/rotation = Quaternion(2.8191485e-09, 0.01036796, 0.9999463, 2.71895e-07)
+
+[node name="BrazoDer" type="TwoBoneIK3D" parent="Skeleton3D" index="2" unique_id=1992949745]
+setting_count = 1
+settings/0/target_node = NodePath("../../KeyPoints/Target_BrazoDer")
+settings/0/pole_node = NodePath("../../KeyPoints/Pole_BrazoDer")
+settings/0/root_bone_name = "mixamorig_RightArm"
+settings/0/root_bone = 8
+settings/0/middle_bone_name = "mixamorig_RightForeArm"
+settings/0/middle_bone = 9
+settings/0/pole_direction = 0
+settings/0/end_bone_name = "mixamorig_RightHand"
+settings/0/end_bone = 10
+settings/0/use_virtual_end = false
+settings/0/extend_end_bone = true
+settings/0/end_bone/direction = 6
+settings/0/end_bone/length = 0.0
+
+[node name="PiernaDer" type="TwoBoneIK3D" parent="Skeleton3D" index="3" unique_id=597652166]
+setting_count = 1
+settings/0/target_node = NodePath("../../KeyPoints/Target_PiernaDer")
+settings/0/pole_node = NodePath("../../KeyPoints/Pole_PiernaDer")
+settings/0/root_bone_name = "mixamorig_RightUpLeg"
+settings/0/root_bone = 55
+settings/0/middle_bone_name = "mixamorig_RightLeg"
+settings/0/middle_bone = 56
+settings/0/pole_direction = 0
+settings/0/end_bone_name = "mixamorig_RightFoot"
+settings/0/end_bone = 57
+settings/0/use_virtual_end = false
+settings/0/extend_end_bone = true
+settings/0/end_bone/direction = 6
+settings/0/end_bone/length = 0.0
+
+[node name="PiernaIzq" type="TwoBoneIK3D" parent="Skeleton3D" index="4" unique_id=1647220021]
+setting_count = 1
+settings/0/target_node = NodePath("../../KeyPoints/Target_PiernaIzq")
+settings/0/pole_node = NodePath("../../KeyPoints/Pole_PiernaIzq")
+settings/0/root_bone_name = "mixamorig_LeftUpLeg"
+settings/0/root_bone = 60
+settings/0/middle_bone_name = "mixamorig_LeftLeg"
+settings/0/middle_bone = 61
+settings/0/pole_direction = 0
+settings/0/end_bone_name = "mixamorig_LeftFoot"
+settings/0/end_bone = 62
+settings/0/use_virtual_end = false
+settings/0/extend_end_bone = true
+settings/0/end_bone/direction = 6
+settings/0/end_bone/length = 0.0
+
+[node name="BrazoIzq" type="TwoBoneIK3D" parent="Skeleton3D" index="5" unique_id=148992298]
+setting_count = 1
+settings/0/target_node = NodePath("../../KeyPoints/Target_BrazoIzq")
+settings/0/pole_node = NodePath("../../KeyPoints/Pole_BrazoIzq")
+settings/0/root_bone_name = "mixamorig_LeftArm"
+settings/0/root_bone = 32
+settings/0/middle_bone_name = "mixamorig_LeftForeArm"
+settings/0/middle_bone = 33
+settings/0/pole_direction = 0
+settings/0/end_bone_name = "mixamorig_LeftHand"
+settings/0/end_bone = 34
+settings/0/use_virtual_end = false
+settings/0/extend_end_bone = true
+settings/0/end_bone/direction = 6
+settings/0/end_bone/length = 0.0
+
+[node name="TroncoFABRIK" type="FABRIK3D" parent="Skeleton3D" index="6" unique_id=1823182474]
+deterministic = true
+setting_count = 1
+settings/0/target_node = NodePath("../../KeyPoints/Target_Cuello")
+settings/0/root_bone_name = "mixamorig_Spine"
+settings/0/root_bone = 1
+settings/0/end_bone_name = "mixamorig_Spine2"
+settings/0/end_bone = 3
+settings/0/extend_end_bone = false
+settings/0/joint_count = 3
+settings/0/joints/0/rotation_axis = 3
+settings/0/joints/0/limitation = null
+settings/0/joints/1/rotation_axis = 3
+settings/0/joints/1/limitation = null
+settings/0/joints/2/rotation_axis = 3
+settings/0/joints/2/limitation = null
+
+[node name="LookAtModifier3D" type="LookAtModifier3D" parent="Skeleton3D" index="7" unique_id=534683465]
+target_node = NodePath("../../KeyPoints/Target_LookAt")
+bone_name = "mixamorig_Head"
+bone = 5
+
+[node name="KeyPoints" type="Node3D" parent="." index="2" unique_id=2004140206]
+
+[node name="Target_BrazoDer" type="Marker3D" parent="KeyPoints" index="0" unique_id=1552350595]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3948149, 1.2846329, 0.437545)
+
+[node name="Target_PiernaIzq" type="Marker3D" parent="KeyPoints" index="1" unique_id=2084715349]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.13405734, 0.013005912, -0.04077345)
+
+[node name="Target_PiernaDer" type="Marker3D" parent="KeyPoints" index="2" unique_id=855444488]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.090893924, 0.10161042, 0.008575022)
+
+[node name="Target_BrazoIzq" type="Marker3D" parent="KeyPoints" index="3" unique_id=951774340]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.4177332, 1.1766034, 0.3646816)
+
+[node name="Pole_BrazoDer" type="Marker3D" parent="KeyPoints" index="4" unique_id=167585556]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.61539316, 1.1029414, -0.16977167)
+
+[node name="Pole_PiernaDer" type="Marker3D" parent="KeyPoints" index="5" unique_id=1841754457]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.61539316, 0.98559, 0.76027894)
+
+[node name="Pole_PiernaIzq" type="Marker3D" parent="KeyPoints" index="6" unique_id=89551219]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3151393, 0.69393206, 0.16918635)
+
+[node name="Pole_BrazoIzq" type="Marker3D" parent="KeyPoints" index="7" unique_id=16757323]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.012571365, 1.2255882, -0.37314513)
+
+[node name="Target_Cuello" type="Marker3D" parent="KeyPoints" index="8" unique_id=61682238]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5704755, 0.35140145)
+
+[node name="Target_LookAt" type="Marker3D" parent="KeyPoints" index="9" unique_id=383040773]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.45655942, 1.5467746, 0.70327485)
+
+[node name="Helper_Forward" type="Marker3D" parent="KeyPoints" index="10" unique_id=1336909162]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.012217402, 0.17309177)
+
+[node name="Helper_Back" type="Marker3D" parent="KeyPoints" index="11" unique_id=547486326]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.1920929e-07, -0.12893838)
+
+[node name="Helper_Right" type="Marker3D" parent="KeyPoints" index="12" unique_id=1444588649]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.17623341, 0, 0)
+
+[node name="Helper_Left" type="Marker3D" parent="KeyPoints" index="13" unique_id=2083432825]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18895578, 0, 0)
+
+[node name="Base" type="Marker3D" parent="KeyPoints" index="14" unique_id=974966072]
