@@ -5,9 +5,6 @@
 
 [node name="X Bot" unique_id=218327802 instance=ExtResource("1_refnd")]
 script = ExtResource("2_elurl")
-velocidad = 5.0
-multiplicador_zancada = 3.0
-agachado = 0.1
 
 [node name="Skeleton3D" parent="." index="0" unique_id=1864599543]
 bones/11/rotation = Quaternion(0.25328454, 0.061618283, -0.2282103, 0.93806726)
@@ -160,3 +157,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.17623341, 0, 0)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18895578, 0, 0)
 
 [node name="Base" type="Marker3D" parent="KeyPoints" index="14" unique_id=974966072]
+
+[node name="Marker_Golpe" type="Marker3D" parent="KeyPoints" index="15" unique_id=1964909321]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.10998201, 1.3773913, 0.83795667)

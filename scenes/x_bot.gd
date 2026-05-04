@@ -1,67 +1,68 @@
 extends Node3D
 
-# --- REFERENCIAS ---
-@onready var p_izq = $KeyPoints/Target_PiernaIzq
-@onready var p_der = $KeyPoints/Target_PiernaDer
-@onready var b_izq = $KeyPoints/Target_BrazoIzq
-@onready var b_der = $KeyPoints/Target_BrazoDer
-@onready var cuello = $KeyPoints/Target_Cuello # Usaremos esto para compensar la mirada
+@onready var skel = $Skeleton3D
+@onready var t_brazo_der = $KeyPoints/Target_BrazoDer
+@onready var p_brazo_der = $KeyPoints/Pole_BrazoDer
+@onready var m_golpe = $KeyPoints/Marker_Golpe
 
+# Helpers de perímetro
 @onready var h_forward = $KeyPoints/Helper_Forward
 @onready var h_back = $KeyPoints/Helper_Back
 @onready var h_right = $KeyPoints/Helper_Right
 @onready var h_left = $KeyPoints/Helper_Left
 
-@onready var skeleton = $Skeleton3D
+var lanzando = false
+var guardia_pos: Vector3
+var guardia_pole: Vector3
+var rotacion_original_torso: Vector3
 
-# --- AJUSTES ---
-@export var velocidad = 3.5          # El sigilo suele ser más lento
-@export var altura_paso = 0.1
-@export var multiplicador_zancada = 1.2
-@export var agachado = 0.25          # <--- CUÁNTO baja el cuerpo (0.0 a 0.5)
+func _ready():
+	t_brazo_der.set_as_top_level(true)
+	p_brazo_der.set_as_top_level(true)
+	
+	await get_tree().process_frame
+	rotacion_original_torso = skel.rotation # Guardamos la pose natural
+	configurar_y_guardar_guardia()
 
-func _process(_delta):
-	var t = Time.get_ticks_msec() / 1000.0 * velocidad
+func configurar_y_guardar_guardia():
+	var centro = skel.global_position
+	var v_der = (h_right.global_position - h_left.global_position)
+	var v_fwd = (h_forward.global_position - h_back.global_position)
 	
-	var osc_a = sin(t) * multiplicador_zancada
-	var osc_b = sin(t + PI) * multiplicador_zancada
+	guardia_pos = centro + (v_der * 0.4) + (v_fwd * 0.3)
+	guardia_pos.y = centro.y + 1.2
+	guardia_pole = centro + (v_der * 0.6) - (v_fwd * 0.1)
+	guardia_pole.y = centro.y + 1.1
 	
-	var centro_z = (h_forward.position.z + h_back.position.z) / 2.0
-	var radio_paso = abs(h_forward.position.z - h_back.position.z) / 2.0
-	var centro_x = (h_left.position.x + h_right.position.x) / 2.0
-	
-	# --- PIERNAS ---
-	p_izq.position.z = centro_z + (osc_a * radio_paso)
-	p_izq.position.x = lerp(centro_x, h_left.position.x, 0.3)
-	p_izq.position.y = h_left.position.y + pow(max(0, cos(t)), 2.0) * altura_paso
-	
-	p_der.position.z = centro_z + (osc_b * radio_paso)
-	p_der.position.x = lerp(centro_x, h_right.position.x, 0.3)
-	p_der.position.y = h_right.position.y + pow(max(0, cos(t + PI)), 2.0) * altura_paso
+	t_brazo_der.global_position = guardia_pos
+	p_brazo_der.global_position = guardia_pole
 
-	# --- CUERPO (EL TRUCO DEL AGACHADO) ---
-	# Bajamos el esqueleto una cantidad fija + el balanceo
-	var bobbing = -abs(sin(t * 2.0)) * 0.02
-	skeleton.position.y = -agachado + bobbing
-	
-	# --- BRAZOS (Más tensos y bajos) ---
-	# Al estar agachado, los brazos suelen ir más pegados al cuerpo
-	var altura_base_brazo = 0.7 - (agachado * 0.5) 
-	
-	b_izq.position.z = centro_z + (osc_b * radio_paso * 0.6)
-	b_izq.position.x = h_left.position.x + 0.05 # Más hacia adentro
-	b_izq.position.y = h_left.position.y + altura_base_brazo
-	
-	b_der.position.z = centro_z + (osc_a * radio_paso * 0.6)
-	b_der.position.x = h_right.position.x - 0.05
-	b_der.position.y = h_right.position.y + altura_base_brazo
+func _input(event):
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if not lanzando:
+			ejecutar_ataque_con_cuerpo()
 
-	# --- CUELLO (Compensación) ---
-	# Si el cuerpo baja, el cuello debería subir un poco o adelantarse 
-	# para que no parezca que el robot mira al suelo
-	cuello.position.y = 1.0 + (agachado * 0.3)
-	cuello.position.z = 0.2 # Lo adelantamos un poco para pose de "acecho"
-
-	# --- DINÁMICA ---
-	skeleton.rotation.x = deg_to_rad(agachado * 40.0) # Inclinamos el torso hacia adelante
-	skeleton.rotation.y = sin(t) * 0.05
+func ejecutar_ataque_con_cuerpo():
+	lanzando = true
+	var pos_impacto = m_golpe.global_position
+	var v_der_norm = (h_right.global_position - h_left.global_position).normalized()
+	
+	var tween = create_tween()
+	
+	# --- FASE 1: IMPACTO (Brazo + Rotación de Torso) ---
+	tween.parallel().tween_property(t_brazo_der, "global_position", pos_impacto, 0.1).set_trans(Tween.TRANS_EXPO).set_ease(Tween.EASE_OUT)
+	tween.parallel().tween_property(p_brazo_der, "global_position", pos_impacto + (v_der_norm * 0.5), 0.1)
+	
+	# Rotamos el torso: Inclinación hacia adelante (X) y giro hacia la izquierda (Y) para adelantar el hombro derecho
+	var rot_golpe = rotacion_original_torso + Vector3(deg_to_rad(10), deg_to_rad(15), 0)
+	tween.parallel().tween_property(skel, "rotation", rot_golpe, 0.1).set_trans(Tween.TRANS_SINE)
+	
+	# --- FASE 2: ESPERA ---
+	tween.chain().tween_interval(2.0)
+	
+	# --- FASE 3: RETORNO ---
+	tween.chain().parallel().tween_property(t_brazo_der, "global_position", guardia_pos, 0.4).set_trans(Tween.TRANS_SINE)
+	tween.parallel().tween_property(p_brazo_der, "global_position", guardia_pole, 0.4)
+	tween.parallel().tween_property(skel, "rotation", rotacion_original_torso, 0.4).set_trans(Tween.TRANS_SINE)
+	
+	tween.finished.connect(func(): lanzando = false)
