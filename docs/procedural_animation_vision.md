@@ -21,8 +21,10 @@ El script de Godot actúa como una mesa de mezclas:
 - [x] Implementación base de IK (TwoBoneIK3D) para brazos y piernas.
 - [x] Sistema de detección de esqueleto dinámico para modelos FBX.
 - [x] Control de Input para Ataque (BIR) y Bloqueo (Shift).
-- [x] Inyección de Helpers visuales (`Helper_Face`, `Helper_Forward`, etc.).
-- [x] Motor de suavizado dinámico (`lerp`) operativo.
+- [x] Inyección de Helpers visuales (`Pose_Guardia`, `Pose_Bloqueo`, `Pose_Punch`).
+- [x] Locomoción Procedimental: Sistema de pasos automáticos con compensación de velocidad.
+- [x] Braceo Procedimental: Balanceo de brazos sincronizado con la marcha.
+- [x] Motor de suavizado dinámico (`lerp`) y equilibrio de torso operativos.
 
 ## 🚀 Próximos Hitos
 1. **Consolidación de Poses**: Sustituir los cálculos de "Guardia" actuales por un contenedor de nodos `Pose_Guardia` que el usuario pueda editar visualmente.

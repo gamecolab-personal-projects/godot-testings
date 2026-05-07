@@ -37,7 +37,9 @@ var speed = 4.0
 var lanzando = false
 var bloqueando = false
 var pie_dando_paso = false
+var walk_time = 0.0
 var rotacion_original_torso: Vector3
+var posicion_original_skel: Vector3
 
 func _ready():
 	# Inicializar independencia de extremidades
@@ -50,6 +52,7 @@ func _ready():
 	
 	await get_tree().process_frame
 	rotacion_original_torso = skel.rotation
+	posicion_original_skel = skel.position
 	
 	# Posición inicial de pies
 	t_pierna_der.global_position = $KeyPoints/Target_PiernaDer.global_position
@@ -70,14 +73,29 @@ func _physics_process(delta):
 		global_position += direction * speed * delta
 		var target_rotation = atan2(direction.x, direction.z)
 		rotation.y = lerp_angle(rotation.y, target_rotation, 10.0 * delta)
+		
+		# Avanzar el ciclo de caminata
+		walk_time += delta * speed * 3.0
+	else:
+		# Frenado MUCHO más rápido del ciclo de braceo
+		walk_time = lerp(walk_time, 0.0, 12.0 * delta)
 	
 	# Inclinación dinámica de compensación
 	var target_tilt = rotacion_original_torso.x
+	var target_sway = 0.0
+	var target_bounce = 0.0
+	
 	if move_dir != Vector3.ZERO and not bloqueando:
-		target_tilt -= deg_to_rad(12) # Se echa atrás solo al caminar
+		target_tilt -= deg_to_rad(12) 
+		# Rebote vertical (2 veces por ciclo de braceo)
+		target_bounce = abs(sin(walk_time)) * 0.06
+		# Balanceo lateral de cadera
+		target_sway = sin(walk_time) * deg_to_rad(3)
 	
 	if not bloqueando and not lanzando:
 		skel.rotation.x = lerp_angle(skel.rotation.x, target_tilt, 5.0 * delta)
+		skel.rotation.z = lerp_angle(skel.rotation.z, target_sway, 5.0 * delta)
+		skel.position.y = lerp(skel.position.y, posicion_original_skel.y - target_bounce, 10.0 * delta)
 	
 	var d_actual = (transform.basis * Vector3(move_dir.x, 0, move_dir.z)).normalized()
 	intentar_dar_paso(d_actual)
@@ -101,6 +119,19 @@ func actualizar_posicion_guardia(delta = 1.0):
 		t_pol_der = pose_g_r_elbow.global_position
 		t_pos_izq = pose_g_l_hand.global_position
 		t_pol_izq = pose_g_l_elbow.global_position
+		
+		# APLICAR BRACEO PROCEDIMENTAL (Manos y Codos para evitar giros bruscos)
+		var v_fwd = (h_forward.global_position - h_back.global_position).normalized()
+		var swing = sin(walk_time) * 0.25 # Amplitud del braceo
+		
+		t_pos_der += v_fwd * swing
+		t_pol_der += v_fwd * (swing * 0.8) - v_fwd * 0.1 + Vector3(0, -0.15, 0)
+		
+		t_pos_izq -= v_fwd * swing
+		# Corregimos el signo: movemos atrás en horizontal y ABAJO en vertical
+		t_pol_izq -= (v_fwd * (swing * 0.8) + v_fwd * 0.1)
+		t_pol_izq += Vector3(0, -0.2, 0) # Más bajo que el derecho como pediste
+		
 		# La verticalidad se gestiona en _physics_process
 		pass
 
