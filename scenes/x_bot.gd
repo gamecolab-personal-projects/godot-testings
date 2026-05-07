@@ -144,13 +144,12 @@ func actualizar_posicion_guardia(delta = 1.0):
 func intentar_dar_paso(dir):
 	if pie_dando_paso: return 
 	
-	# Retrasamos el centro de los pies MUCHO más respecto al cuerpo
-	var centro_base = global_position - (dir * 0.3)
+	# Centro de referencia
+	var centro_base = global_position - (dir * 0.1)
 	centro_base.y = 0
 	
-	# Zancada MASIVA para compensar la alta velocidad del bot (4m/s)
-	# El cuerpo recorre 0.7m mientras el pie vuela, así que lanzamos el pie a 1.1m
-	var offset_paso = dir * 1.1 
+	# Zancada equilibrada (1.05m) para compensar los 0.8m que recorre el cuerpo en el aire
+	var offset_paso = dir * 1.05 
 	
 	var ideal_der = centro_base + (transform.basis * Vector3(-0.18, 0, 0)) + offset_paso
 	var ideal_izq = centro_base + (transform.basis * Vector3(0.18, 0, 0)) + offset_paso
@@ -158,10 +157,12 @@ func intentar_dar_paso(dir):
 	var d_der = t_pierna_der.global_position.distance_to(ideal_der)
 	var d_izq = t_pierna_izq.global_position.distance_to(ideal_izq)
 	
-	# Umbral muy agresivo
-	if d_der > 0.3 and d_der >= d_izq:
+	# Umbral dinámico: si nos movemos aguantamos más (0.65), si paramos recogemos pies (0.15)
+	var umbral = 0.65 if dir.length() > 0.1 else 0.15
+	
+	if d_der > umbral and d_der >= d_izq:
 		animar_paso(t_pierna_der, ideal_der)
-	elif d_izq > 0.3:
+	elif d_izq > umbral:
 		animar_paso(t_pierna_izq, ideal_izq)
 
 func animar_paso(target, destino):
@@ -169,9 +170,9 @@ func animar_paso(target, destino):
 	var tween = create_tween()
 	var medio = target.global_position.lerp(destino, 0.5) + Vector3(0, 0.15, 0)
 	
-	# Paso ultra-rápido para que el cuerpo no adelante al pie
-	tween.tween_property(target, "global_position", medio, 0.08).set_trans(Tween.TRANS_SINE)
-	tween.chain().tween_property(target, "global_position", destino, 0.05).set_trans(Tween.TRANS_SINE)
+	# Paso un poco más pausado para que se vea la amplitud (0.12s + 0.08s)
+	tween.tween_property(target, "global_position", medio, 0.12).set_trans(Tween.TRANS_SINE)
+	tween.chain().tween_property(target, "global_position", destino, 0.08).set_trans(Tween.TRANS_SINE)
 	tween.finished.connect(func(): pie_dando_paso = false)
 
 func _input(event):

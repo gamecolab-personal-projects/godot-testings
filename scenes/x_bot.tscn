@@ -168,16 +168,16 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6396455, 0.28215367)
 [node name="Pose_Guardia" type="Node3D" parent="." index="3" unique_id=133947165]
 
 [node name="RightHand" type="Marker3D" parent="Pose_Guardia" index="0" unique_id=175281247]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2900573, 1.1506464, 0.32144088)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2900573, 0.9042772, 0.15976113)
 
 [node name="RightElbow" type="Marker3D" parent="Pose_Guardia" index="1" unique_id=1372083026]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2900573, 1.246913, 0.0066680834)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2900573, 1.1814711, -0.04722525)
 
 [node name="LeftElbow" type="Marker3D" parent="Pose_Guardia" index="2" unique_id=783336202]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2900573, 1.2469262, -0.13473749)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2900573, 1.1622368, -0.05389762)
 
 [node name="LeftHand" type="Marker3D" parent="Pose_Guardia" index="3" unique_id=581868851]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3200631, 1.1825556, 0.25859404)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3200631, 0.95158434, 0.16235614)
 
 [node name="Pose_Bloqueo" type="Node3D" parent="." index="4" unique_id=1965174755]
 
