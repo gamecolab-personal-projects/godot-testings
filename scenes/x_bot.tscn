@@ -113,6 +113,7 @@ bone_name = "mixamorig_Head"
 bone = 5
 
 [node name="KeyPoints" type="Node3D" parent="." index="2" unique_id=2004140206]
+visible = false
 
 [node name="Target_BrazoDer" type="Marker3D" parent="KeyPoints" index="0" unique_id=1552350595]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.3948149, 1.2846329, 0.437545)
@@ -160,3 +161,48 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.18895578, 0, 0)
 
 [node name="Marker_Golpe" type="Marker3D" parent="KeyPoints" index="15" unique_id=1964909321]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.10998201, 1.3773913, 0.83795667)
+
+[node name="Helper_Face" type="Marker3D" parent="KeyPoints" index="16" unique_id=7777777]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6396455, 0.28215367)
+
+[node name="Pose_Guardia" type="Node3D" parent="." index="3" unique_id=133947165]
+
+[node name="RightHand" type="Marker3D" parent="Pose_Guardia" index="0" unique_id=175281247]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2900573, 1.1506464, 0.32144088)
+
+[node name="RightElbow" type="Marker3D" parent="Pose_Guardia" index="1" unique_id=1372083026]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.2900573, 1.246913, 0.0066680834)
+
+[node name="LeftElbow" type="Marker3D" parent="Pose_Guardia" index="2" unique_id=783336202]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2900573, 1.2469262, -0.13473749)
+
+[node name="LeftHand" type="Marker3D" parent="Pose_Guardia" index="3" unique_id=581868851]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3200631, 1.1825556, 0.25859404)
+
+[node name="Pose_Bloqueo" type="Node3D" parent="." index="4" unique_id=1965174755]
+
+[node name="RightHand" type="Marker3D" parent="Pose_Bloqueo" index="0" unique_id=1589871216]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11297929, 1.6472344, 0.3021931)
+
+[node name="RightElbow" type="Marker3D" parent="Pose_Bloqueo" index="1" unique_id=1958219628]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.20151842, 1.2738596, 0.3954696)
+
+[node name="LeftElbow" type="Marker3D" parent="Pose_Bloqueo" index="2" unique_id=181306737]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.20151842, 1.2623242, 0.39264655)
+
+[node name="LeftHand" type="Marker3D" parent="Pose_Bloqueo" index="3" unique_id=1273361342]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.069844484, 1.659896, 0.30863762)
+
+[node name="Pose_Punch" type="Node3D" parent="." index="5" unique_id=394927265]
+
+[node name="RightHand" type="Marker3D" parent="Pose_Punch" index="0" unique_id=1308206243]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.11297929, 1.5663946, 0.7063929)
+
+[node name="RightElbow" type="Marker3D" parent="Pose_Punch" index="1" unique_id=1049464095]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25156224, 1.4085928, 0.33002776)
+
+[node name="LeftElbow" type="Marker3D" parent="Pose_Punch" index="2" unique_id=1530803475]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.26311076, 1.2507757, -0.11164045)
+
+[node name="LeftHand" type="Marker3D" parent="Pose_Punch" index="3" unique_id=171427413]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.258471, 1.0555214, 0.23164725)
