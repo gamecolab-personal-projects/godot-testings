@@ -32,12 +32,29 @@ extends Node3D
 @onready var pose_p_l_hand = $Pose_Punch/LeftHand
 @onready var pose_p_l_elbow = $Pose_Punch/LeftElbow
 
-# Configuración y Estado
-var speed = 4.0
+# --- CONFIGURACIÓN DESDE EL INSPECTOR ---
+@export_group("Locomoción")
+@export var velocidad_movimiento: float = 4.0
+@export var amplitud_zancada: float = 1.05
+@export var umbral_paso: float = 0.65
+
+@export_group("Personalidad Idle")
+@export var amplitud_respiracion: float = 0.015
+@export var velocidad_respiracion: float = 1.5
+
+@export_group("Física y Balanceo")
+@export var intensidad_rebote: float = 0.06
+@export var inclinacion_torso_deg: float = 12.0
+@export var balanceo_cadera_deg: float = 3.0
+@export var amplitud_braceo: float = 0.25
+
+# --- ESTADO INTERNO ---
 var lanzando = false
 var bloqueando = false
 var pie_dando_paso = false
 var walk_time = 0.0
+var idle_time = 0.0
+var current_move_dir = Vector3.ZERO
 var rotacion_original_torso: Vector3
 var posicion_original_skel: Vector3
 
@@ -67,15 +84,16 @@ func _physics_process(delta):
 	if Input.is_key_pressed(KEY_A): move_dir.x += 1
 	if Input.is_key_pressed(KEY_D): move_dir.x -= 1
 	
+	current_move_dir = move_dir
 	if move_dir != Vector3.ZERO:
 		move_dir = move_dir.normalized()
 		var direction = (transform.basis * Vector3(move_dir.x, 0, move_dir.z)).normalized()
-		global_position += direction * speed * delta
+		global_position += direction * velocidad_movimiento * delta
 		var target_rotation = atan2(direction.x, direction.z)
 		rotation.y = lerp_angle(rotation.y, target_rotation, 10.0 * delta)
 		
 		# Avanzar el ciclo de caminata
-		walk_time += delta * speed * 3.0
+		walk_time += delta * velocidad_movimiento * 3.0
 	else:
 		# Frenado MUCHO más rápido del ciclo de braceo
 		walk_time = lerp(walk_time, 0.0, 12.0 * delta)
@@ -83,19 +101,21 @@ func _physics_process(delta):
 	# Inclinación dinámica de compensación
 	var target_tilt = rotacion_original_torso.x
 	var target_sway = 0.0
-	var target_bounce = 0.0
+	var total_y_offset = 0.0
 	
 	if move_dir != Vector3.ZERO and not bloqueando:
-		target_tilt -= deg_to_rad(12) 
-		# Rebote vertical (2 veces por ciclo de braceo)
-		target_bounce = abs(sin(walk_time)) * 0.06
-		# Balanceo lateral de cadera
-		target_sway = sin(walk_time) * deg_to_rad(3)
+		target_tilt -= deg_to_rad(inclinacion_torso_deg) 
+		# Rebote de caminata
+		total_y_offset = -abs(sin(walk_time)) * intensidad_rebote
+		target_sway = sin(walk_time) * deg_to_rad(balanceo_cadera_deg)
+	else:
+		# Respiración (solo si estamos quietos)
+		total_y_offset = sin(Time.get_ticks_msec() * 0.001 * velocidad_respiracion) * amplitud_respiracion * 0.4
 	
 	if not bloqueando and not lanzando:
 		skel.rotation.x = lerp_angle(skel.rotation.x, target_tilt, 5.0 * delta)
 		skel.rotation.z = lerp_angle(skel.rotation.z, target_sway, 5.0 * delta)
-		skel.position.y = lerp(skel.position.y, posicion_original_skel.y - target_bounce, 10.0 * delta)
+		skel.position.y = lerp(skel.position.y, posicion_original_skel.y + total_y_offset, 10.0 * delta)
 	
 	var d_actual = (transform.basis * Vector3(move_dir.x, 0, move_dir.z)).normalized()
 	intentar_dar_paso(d_actual)
@@ -120,9 +140,15 @@ func actualizar_posicion_guardia(delta = 1.0):
 		t_pos_izq = pose_g_l_hand.global_position
 		t_pol_izq = pose_g_l_elbow.global_position
 		
-		# APLICAR BRACEO PROCEDIMENTAL (Manos y Codos para evitar giros bruscos)
+		# APLICAR RESPIRACIÓN A LAS MANOS (Solo si estamos casi parados)
+		if current_move_dir.length() < 0.1:
+			var breath_hands = sin(Time.get_ticks_msec() * 0.001 * velocidad_respiracion) * amplitud_respiracion
+			t_pos_der.y += breath_hands
+			t_pos_izq.y += breath_hands
+		
+		# APLICAR BRACEO PROCEDIMENTAL (Manos y Codos)
 		var v_fwd = (h_forward.global_position - h_back.global_position).normalized()
-		var swing = sin(walk_time) * 0.25 # Amplitud del braceo
+		var swing = sin(walk_time) * amplitud_braceo
 		
 		t_pos_der += v_fwd * swing
 		t_pol_der += v_fwd * (swing * 0.8) - v_fwd * 0.1 + Vector3(0, -0.15, 0)
@@ -148,8 +174,8 @@ func intentar_dar_paso(dir):
 	var centro_base = global_position - (dir * 0.1)
 	centro_base.y = 0
 	
-	# Zancada equilibrada (1.05m) para compensar los 0.8m que recorre el cuerpo en el aire
-	var offset_paso = dir * 1.05 
+	# Zancada equilibrada para compensar el avance
+	var offset_paso = dir * amplitud_zancada 
 	
 	var ideal_der = centro_base + (transform.basis * Vector3(-0.18, 0, 0)) + offset_paso
 	var ideal_izq = centro_base + (transform.basis * Vector3(0.18, 0, 0)) + offset_paso
@@ -157,8 +183,8 @@ func intentar_dar_paso(dir):
 	var d_der = t_pierna_der.global_position.distance_to(ideal_der)
 	var d_izq = t_pierna_izq.global_position.distance_to(ideal_izq)
 	
-	# Umbral dinámico: si nos movemos aguantamos más (0.65), si paramos recogemos pies (0.15)
-	var umbral = 0.65 if dir.length() > 0.1 else 0.15
+	# Umbral dinámico: si nos movemos usamos umbral_paso, si paramos usamos 0.15
+	var umbral = umbral_paso if dir.length() > 0.1 else 0.15
 	
 	if d_der > umbral and d_der >= d_izq:
 		animar_paso(t_pierna_der, ideal_der)

@@ -1,36 +1,31 @@
-# Proyecto: Animación Procedimental Humana (Godot 4.6 IK)
+# Visión: Sistema de Animación Procedimental "Pose-by-Node"
 
-## 🎯 Visión del Proyecto
-Crear un sistema de animación humana 100% programático y dinámico, eliminando la dependencia de MoCap o animaciones pre-grabadas. El sistema utiliza el motor de **Cinemática Inversa (IK)** de Godot 4.6 para generar movimientos orgánicos, reactivos y adaptables en tiempo real.
+Este documento define la arquitectura y el roadmap del sistema de animación procedimental para Godot 4.6, basado en la manipulación visual de poses a través de nodos Marker3D y un motor de interpolación dinámico.
 
-## 🏗️ Arquitectura de "Pose por Nodos" (Helper-Centric)
-La filosofía de diseño se basa en delegar el "Acting" (la intención del movimiento) a la jerarquía visual de Godot, simplificando el código al máximo.
+## 🎯 El Concepto Core
+Sustituir las animaciones tradicionales "baked" (pre-cocinadas) por un sistema donde el "Acting" reside en la jerarquía de nodos de Godot. El código no define la pose, solo la **interpolación** y la **física** entre poses definidas por el diseñador en el editor.
 
-### 1. Nodos de Pose (Fantasmas)
-En lugar de calcular posiciones matemáticas en el script, se utilizan grupos de `Marker3D` en el editor para definir los "Keyframes" del sistema:
-- **Pose_Guardia**: 4 Marcadores (Manos y Codos) que definen la postura base.
-- **Pose_Bloqueo**: Marcadores que definen la defensa cerrada.
-- **Pose_Impacto**: Marcadores que definen el punto máximo de extensión de un golpe.
+## ✅ Logros Alcanzados (V1.0 - Core Locomotion & Combat)
+- [x] **Arquitectura Helper-Céntrica**: Uso de `Pose_Guardia`, `Pose_Bloqueo` y `Pose_Punch` como fuentes de verdad.
+- [x] **Locomoción Inteligente**: Sistema de zancada con compensación de velocidad y umbrales dinámicos (Centrado de pies al parar).
+- [x] **Micro-Vida Procedural**: Respiración (breathing) y micro-oscilaciones rítmicas en Idle.
+- [x] **Física de Masa**: Rebote vertical (Bounce) y balanceo lateral de cadera (Hip Sway) sincronizados.
+- [x] **Braceo en Oposición**: Balanceo de brazos procedimental con estabilización de codos.
+- [x] **Equilibrio Dinámico**: Inclinación de torso automática según dirección de marcha y estado de bloqueo.
 
-### 2. El Cerebro de Mezcla (Blending Engine)
-El script de Godot actúa como una mesa de mezclas:
-- Interpola (`lerp`) entre los diferentes grupos de Helpers según el estado del bot (Idle, Atacando, Defendiendo).
-- Aplica **Inercia y Masa**: Los targets no llegan instantáneamente; tienen una aceleración y frenado que simula el peso de las extremidades.
+## 🚀 Próximos Hitos (V2.0 - Intelligence & Physics)
 
-## 🛠️ Estado Actual
-- [x] Implementación base de IK (TwoBoneIK3D) para brazos y piernas.
-- [x] Sistema de detección de esqueleto dinámico para modelos FBX.
-- [x] Control de Input para Ataque (BIR) y Bloqueo (Shift).
-- [x] Inyección de Helpers visuales (`Pose_Guardia`, `Pose_Bloqueo`, `Pose_Punch`).
-- [x] Locomoción Procedimental: Sistema de pasos automáticos con compensación de velocidad.
-- [x] Braceo Procedimental: Balanceo de brazos sincronizado con la marcha.
-- [x] Motor de suavizado dinámico (`lerp`) y equilibrio de torso operativos.
+### 1. Adaptación al Terreno (IK Foot Placement)
+Implementar `RayCast3D` en cada pierna para que los pies detecten colisiones y ajusten su altura `Y` y rotación para adaptarse a escalones, piedras y rampas.
 
-## 🚀 Próximos Hitos
-1. **Consolidación de Poses**: Sustituir los cálculos de "Guardia" actuales por un contenedor de nodos `Pose_Guardia` que el usuario pueda editar visualmente.
-2. **Coordinación de Peso (Full Body)**: Hacer que la cadera y el torso reaccionen a la extensión de los brazos para dar sensación de potencia.
-3. **Física Activa**: Integrar colisiones para que el puñetazo se detenga físicamente al impactar, en lugar de atravesar objetos.
-4. **Arcos de Movimiento**: Implementar trayectorias curvas para los golpes (Hooks y Uppercuts) mediante puntos intermedios (Bézier procedimental).
+### 2. Física Activa de Impacto
+Integrar detección de colisiones en los puños para que el `Tween` de ataque se detenga físicamente al impactar contra un objeto o enemigo, activando una pose de "Impacto" procedimental.
+
+### 3. Reacciones de Daño (Procedural Hit-Reaction)
+Usar el sistema de IK para que el cuerpo del bot reaccione a impactos externos, desplazando el torso o las extremidades según la fuerza y dirección del golpe recibido.
+
+### 4. Arcos de Movimiento (Bézier Striking)
+Implementar trayectorias curvas para los ataques (Hooks, Uppercuts) mediante la adición de "Puntos de Paso" (Waypoints) dinámicos entre la guardia y el impacto.
 
 ---
-*Este documento actúa como guía técnica para el desarrollo del prototipo de animación procedimental.*
+*Actualizado: 2026-05-07 - Sistema estable y listo para integración de terreno.*
