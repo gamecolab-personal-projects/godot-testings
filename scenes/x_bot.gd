@@ -71,6 +71,14 @@ func _physics_process(delta):
 		var target_rotation = atan2(direction.x, direction.z)
 		rotation.y = lerp_angle(rotation.y, target_rotation, 10.0 * delta)
 	
+	# Inclinación dinámica de compensación
+	var target_tilt = rotacion_original_torso.x
+	if move_dir != Vector3.ZERO and not bloqueando:
+		target_tilt -= deg_to_rad(12) # Se echa atrás solo al caminar
+	
+	if not bloqueando and not lanzando:
+		skel.rotation.x = lerp_angle(skel.rotation.x, target_tilt, 5.0 * delta)
+	
 	var d_actual = (transform.basis * Vector3(move_dir.x, 0, move_dir.z)).normalized()
 	intentar_dar_paso(d_actual)
 
@@ -93,7 +101,8 @@ func actualizar_posicion_guardia(delta = 1.0):
 		t_pol_der = pose_g_r_elbow.global_position
 		t_pos_izq = pose_g_l_hand.global_position
 		t_pol_izq = pose_g_l_elbow.global_position
-		skel.rotation.x = lerp_angle(skel.rotation.x, rotacion_original_torso.x, 10.0 * delta)
+		# La verticalidad se gestiona en _physics_process
+		pass
 
 	var s = 15.0 * delta
 	t_brazo_der.global_position = t_brazo_der.global_position.lerp(t_pos_der, s)
@@ -103,17 +112,24 @@ func actualizar_posicion_guardia(delta = 1.0):
 
 func intentar_dar_paso(dir):
 	if pie_dando_paso: return 
-	var centro_base = Vector3(global_position.x, 0, global_position.z)
-	var offset_paso = dir * 0.35
+	
+	# Retrasamos el centro de los pies MUCHO más respecto al cuerpo
+	var centro_base = global_position - (dir * 0.3)
+	centro_base.y = 0
+	
+	# Zancada muy adelantada
+	var offset_paso = dir * 0.55 
+	
 	var ideal_der = centro_base + (transform.basis * Vector3(-0.18, 0, 0)) + offset_paso
 	var ideal_izq = centro_base + (transform.basis * Vector3(0.18, 0, 0)) + offset_paso
 	
 	var d_der = t_pierna_der.global_position.distance_to(ideal_der)
 	var d_izq = t_pierna_izq.global_position.distance_to(ideal_izq)
 	
-	if d_der > 0.45 and d_der >= d_izq:
+	# Umbral de activación (si el pie se queda atrás 0.4m, salta adelante 0.5m)
+	if d_der > 0.4 and d_der >= d_izq:
 		animar_paso(t_pierna_der, ideal_der)
-	elif d_izq > 0.45:
+	elif d_izq > 0.4:
 		animar_paso(t_pierna_izq, ideal_izq)
 
 func animar_paso(target, destino):
